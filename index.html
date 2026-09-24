@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#070a18">
+<title>中秋快乐</title>
+<style>
+  :root{
+    --gold:#ffd97a;
+    --gold-2:#ffe9b0;
+    --ink:#e8ecff;
+    --muted:#9aa6c9;
+    --cyan:#7fd8ff;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:
+      radial-gradient(120% 75% at 50% -10%, #2a3370 0%, #1a2148 30%, #0d1230 58%, #06090f 100%);
+    color:var(--ink);
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  #sky{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;}
+
+  .wrap{
+    position:relative;z-index:2;
+    min-height:100vh;min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;
+    padding:calc(16px + env(safe-area-inset-top)) 22px calc(20px + env(safe-area-inset-bottom));
+    text-align:center;
+  }
+
+  /* ---------- 顶部状态胶囊 ---------- */
+  .badge{
+    display:inline-flex;align-items:center;gap:7px;
+    padding:6px 14px;border-radius:999px;
+    font-size:10.5px;letter-spacing:.1em;
+    color:#9fd8ff;
+    background:rgba(90,170,255,.08);
+    border:1px solid rgba(120,200,255,.22);
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
+    white-space:nowrap;
+  }
+  .badge .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:#3ee08a;box-shadow:0 0 8px #3ee08a;
+    animation:blink 1.6s infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+  /* ---------- 月亮区 ---------- */
+  .moon-area{
+    position:relative;width:100%;
+    height:min(32vh,250px);min-height:168px;
+    display:flex;align-items:center;justify-content:center;
+    margin-top:4px;
+  }
+  .halo{
+    position:absolute;
+    width:min(125vw,560px);aspect-ratio:1/1;border-radius:50%;
+    background:radial-gradient(circle, rgba(255,205,110,.22) 0%, rgba(255,180,70,.09) 34%, transparent 66%);
+    pointer-events:none;
+    animation:pulse 5.5s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+
+  .ring{
+    position:absolute;
+    width:clamp(186px,56vw,290px);aspect-ratio:1/1;border-radius:50%;
+    border:1px dashed rgba(255,215,130,.20);
+    animation:spin 28s linear infinite;
+    pointer-events:none;
+  }
+  .ring::before{
+    content:'';position:absolute;top:-3px;left:50%;
+    width:6px;height:6px;margin-left:-3px;border-radius:50%;
+    background:#ffd97a;box-shadow:0 0 12px #ffd97a;
+  }
+  .ring2{
+    width:clamp(238px,72vw,372px);
+    border-style:solid;border-color:rgba(127,216,255,.10);
+    animation:spin 46s linear infinite reverse;
+  }
+  .ring2::before{background:#7fd8ff;box-shadow:0 0 12px #7fd8ff;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .moon{
+    position:relative;z-index:3;
+    width:clamp(102px,31vw,154px);aspect-ratio:1/1;border-radius:50%;
+    background:radial-gradient(circle at 34% 30%, #fffdf3 0%, #fff3c9 26%, #ffdf8f 56%, #f2bd4c 84%, #d99b2b 100%);
+    box-shadow:
+      0 0 22px rgba(255,224,150,.85),
+      0 0 58px rgba(255,205,90,.55),
+      0 0 118px rgba(255,180,60,.30),
+      0 0 210px rgba(255,160,40,.16),
+      inset -14px -16px 34px rgba(190,130,30,.35),
+      inset 8px 10px 26px rgba(255,255,255,.5);
+    animation:float 6s ease-in-out infinite;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  .crater{
+    position:absolute;border-radius:50%;
+    background:rgba(206,152,48,.26);
+    box-shadow:inset 1px 2px 3px rgba(160,110,20,.32), 0 1px 2px rgba(255,255,255,.35);
+  }
+  .c1{width:22%;height:22%;left:20%;top:25%;}
+  .c2{width:13%;height:13%;left:57%;top:17%;}
+  .c3{width:25%;height:25%;left:44%;top:56%;opacity:.85;}
+  .c4{width:10%;height:10%;left:27%;top:67%;opacity:.65;}
+
+  /* ---------- 文字 ---------- */
+  .to{
+    margin-top:2px;
+    font-size:12.5px;letter-spacing:.34em;text-indent:.34em;
+    color:#9fb0dd;
+  }
+  .title{
+    margin:8px 0 0;
+    font-size:clamp(25px,7.4vw,37px);font-weight:700;
+    letter-spacing:.18em;text-indent:.18em;
+    background:linear-gradient(180deg,#fffdf0 0%,#ffe6a3 46%,#ffc94d 100%);
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;
+    filter:drop-shadow(0 2px 16px rgba(255,190,80,.35));
+  }
+  .divider{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    width:100%;max-width:310px;margin:12px 0 14px;
+  }
+  .divider i{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,130,.45),transparent);}
+  .divider span{font-size:10px;color:#ffd97a;opacity:.85;}
+
+  .lines{width:100%;max-width:420px;}
+  .lines p{
+    font-size:15px;line-height:2.05;color:#ccd6f5;
+    opacity:0;transform:translateY(12px);
+    animation:fadeUp .9s cubic-bezier(.22,.9,.3,1) forwards;
+  }
+  .lines p:last-child{color:#ffe3a0;margin-top:4px;}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+  /* ---------- 终端 ---------- */
+  .terminal{
+    display:none;
+    width:100%;max-width:400px;margin:22px auto 0;
+    background:rgba(8,12,26,.84);
+    border:1px solid rgba(127,216,255,.22);
+    border-radius:14px;overflow:hidden;
+    text-align:left;
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    box-shadow:0 12px 40px rgba(0,0,0,.5), inset 0 0 30px rgba(60,140,255,.06);
+  }
+  .terminal.show{display:block;animation:fadeUp .55s cubic-bezier(.22,.9,.3,1) both;}
+  .term-bar{
+    display:flex;align-items:center;gap:6px;
+    padding:9px 12px;
+    background:rgba(255,255,255,.04);
+    border-bottom:1px solid rgba(127,216,255,.12);
+  }
+  .term-bar span{width:8px;height:8px;border-radius:50%;background:#ff6058;}
+  .term-bar span:nth-child(2){background:#ffbd2e;}
+  .term-bar span:nth-child(3){background:#28c840;}
+  .term-bar em{
+    margin-left:6px;font-style:normal;
+    font-family:ui-monospace,Menlo,Consolas,monospace;
+    font-size:10.5px;color:#6f7ea8;letter-spacing:.02em;
+  }
+  #termBody{
+    padding:12px 14px 14px;
+    font-family:ui-monospace,Menlo,Consolas,"Courier New",monospace;
+    font-size:11.8px;line-height:1.95;color:#7fd8ff;
+    white-space:pre-wrap;word-break:break-all;
+    min-height:20px;
+  }
+  #termBody .hl{color:#ffd97a;}
+  .cursor{
+    display:inline-block;width:7px;height:12px;
+    background:#7fd8ff;vertical-align:-1px;margin-left:2px;
+    animation:blink2 .9s steps(1) infinite;
+  }
+  @keyframes blink2{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+  /* ---------- 提示按钮 ---------- */
+  .hint{
+    margin-top:20px;
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 20px;border-radius:999px;
+    font-family:inherit;font-size:12.5px;color:#cfe0ff;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,215,130,.28);
+    animation:breathe 2.8s ease-in-out infinite;
+    cursor:pointer;outline:none;
+  }
+  @keyframes breathe{
+    0%,100%{box-shadow:0 0 0 0 rgba(255,205,110,.28)}
+    50%{box-shadow:0 0 0 11px rgba(255,205,110,0)}
+  }
+
+  /* ---------- 落款 ---------- */
+  .sign{
+    margin-top:auto;padding-top:28px;
+    font-size:11.5px;line-height:2;color:#7d89ad;
+  }
+  .sign .small{font-size:10px;color:#5d6789;letter-spacing:.04em;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.01ms !important;animation-iteration-count:1 !important;}
+    .lines p{opacity:1;transform:none;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="sky"></canvas>
+
+<div class="wrap">
+  <div class="badge"><span class="dot"></span>AI 中秋祝福系统 · ONLINE</div>
+
+  <div class="moon-area">
+    <div class="halo"></div>
+    <div class="ring ring2"></div>
+    <div class="ring"></div>
+    <div class="moon" id="moon">
+      <div class="crater c1"></div>
+      <div class="crater c2"></div>
+      <div class="crater c3"></div>
+      <div class="crater c4"></div>
+    </div>
+  </div>
+
+  <div class="to" id="to">致 爸爸</div>
+  <h1 class="title">中秋快乐</h1>
+  <div class="divider"><i></i><span>✦</span><i></i></div>
+  <div class="lines" id="lines"></div>
+
+  <div class="terminal" id="terminal">
+    <div class="term-bar">
+      <span></span><span></span><span></span>
+      <em id="termCmd">ai-wish --to=father</em>
+    </div>
+    <div id="termBody"></div>
+  </div>
+
+  <button class="hint" id="hint" type="button">点击月亮 · 运行 AI 祝福模型</button>
+
+  <footer class="sign">
+    <p>代码 × 算法 × 心意</p>
+    <p class="small">HTML5 · Canvas · JavaScript 手写 · 人工智能专业</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     1. 祝福数据 —— 四个链接共用同一个页面，用 ?to= 区分
+     ========================================================= */
+  var DATA = {
+    father: {
+      label: '爸爸',
+      cmd: 'father',
+      lines: [
+        '月亮走了一整年，才走到最圆；',
+        '您忙碌了一整年，也该歇一歇了。',
+        '愿您身康体健，少些操劳，',
+        '杯中有茶，盘中有月饼，身边有我们。',
+      ],
+      terminal: [
+        '> 正在加载「父亲」情感模型 ...',
+        '> 训练数据：您教我的这些年',
+        '> 损失函数：思念值 · 持续下降中',
+        '> 模型收敛，推理完成',
+        '> 输出：「爸爸，中秋快乐。」'
+      ]
+    },
+    mother: {
+      label: '妈妈',
+      cmd: 'mother',
+      lines: [
+        '妈妈，中秋节快乐，',
+        '愿您身体健康，事事如愿。',
+        '愿岁月对您温柔，',
+        '眼里有光，锅里有汤，心里有甜。',
+      ],
+      terminal: [
+        '> 正在加载「母亲」情感模型 ...',
+        '> 训练数据：您说的每一句话',
+        '> 学习率：爱 · 设为无限大',
+        '> 模型收敛，推理完成',
+        '> 输出：「妈，中秋快乐，记得吃月饼。」'
+      ]
+    },
+    uncle: {
+      label: '叔叔',
+      cmd: 'uncle',
+      lines: [
+        '叔叔，中秋快乐！',
+        '祝您事业如满月，圆满又明亮；',
+        '身体硬朗，心情舒畅，',
+        '所行皆坦途，所求皆如愿。',
+      ],
+      terminal: [
+        '> 正在加载「叔叔」敬重模型 ...',
+        '> 训练数据：您的每一次指点',
+        '> 推理耗时：0.01s / 句祝福',
+        '> 模型收敛，推理完成',
+        '> 输出：「叔叔，中秋快乐，万事顺遂！」'
+      ]
+    },
+    aunt: {
+      label: '姑姑',
+      cmd: 'aunt',
+      lines: [
+        '姑姑，中秋快乐！',
+        '愿您永远年轻漂亮，',
+        '日子过得比月饼还甜，',
+        '烦恼都被月光一照就散了。',
+        '记得吃月饼，别怕胖，您最好看。'
+      ],
+      terminal: [
+        '> 正在加载「姑姑」亲切模型 ...',
+        '> 训练数据：您塞给我的每个红包',
+        '> 生成参数：甜度 100%',
+        '> 模型收敛，推理完成',
+        '> 输出：「姑姑，中秋快乐，越来越美！」'
+      ]
+    }
+  };
+
+  /* 中文 / 拼音 / 英文都能识别 */
+  var ALIAS = {
+    father: 'father', '爸爸': 'father', '爸': 'father', baba: 'father', ba: 'father',
+    mother: 'mother', '妈妈': 'mother', '妈': 'mother', mama: 'mother', ma: 'mother',
+    uncle: 'uncle', '叔叔': 'uncle', '叔': 'uncle', shushu: 'uncle',
+    aunt: 'aunt', '姑姑': 'aunt', '姑': 'aunt', gugu: 'aunt'
+  };
+
+  var raw = '';
+  try {
+    raw = (new URLSearchParams(location.search).get('to') || 'father');
+  } catch (e) { raw = 'father'; }
+  raw = String(raw).trim().toLowerCase();
+  var key = ALIAS[raw] || 'father';
+  var d = DATA[key];
+
+  /* =========================================================
+     2. 注入文案
+     ========================================================= */
+  document.title = '中秋快乐 · 致' + d.label;
+  document.getElementById('to').textContent = '致 ' + d.label;
+  document.getElementById('termCmd').textContent = 'ai-wish --to=' + d.cmd;
+
+  var linesBox = document.getElementById('lines');
+  d.lines.forEach(function (txt, i) {
+    var p = document.createElement('p');
+    p.textContent = txt;
+    p.style.animationDelay = (0.35 + i * 0.3).toFixed(2) + 's';
+    linesBox.appendChild(p);
+  });
+
+  /* =========================================================
+     3. 终端打字机
+     ========================================================= */
+  var term = document.getElementById('terminal');
+  var termBody = document.getElementById('termBody');
+  var moon = document.getElementById('moon');
+  var hint = document.getElementById('hint');
+  var running = false;
+
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function typeLines(arr) {
+    termBody.innerHTML = '';
+    var chain = Promise.resolve();
+
+    arr.forEach(function (line, idx) {
+      chain = chain.then(function () {
+        var div = document.createElement('div');
+        if (idx === arr.length - 1) div.className = 'hl';
+        termBody.appendChild(div);
+
+        var chars = Array.from(line);
+        var inner = Promise.resolve();
+        chars.forEach(function (ch) {
+          inner = inner.then(function () {
+            div.textContent += ch;
+            return sleep(ch === '。' ? 120 : 26);
+          });
+        });
+        return inner.then(function () { return sleep(280); });
+      });
+    });
+
+    return chain.then(function () {
+      var cur = document.createElement('span');
+      cur.className = 'cursor';
+      termBody.appendChild(cur);
+    });
+  }
+
+  function run() {
+    if (running) return;
+    running = true;
+    term.classList.add('show');
+    typeLines(d.terminal).then(function () { running = false; });
+  }
+
+  moon.addEventListener('click', run);
+  hint.addEventListener('click', run);
+
+  /* 进入页面 2.4 秒后自动跑一次，长辈不用点也能看到 */
+  setTimeout(function () { run(); }, 2400);
+
+  /* =========================================================
+     4. Canvas：星空 + 神经网络 + 桂花光点 + 流星
+     ========================================================= */
+  var cvs = document.getElementById('sky');
+  var ctx = cvs.getContext('2d');
+  var W = 0, H = 0, DPR = 1;
+  var stars = [], nodes = [], petals = [];
+  var meteor = null, meteorTimer = 5 + Math.random() * 6;
+  var lastT = 0;
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  /* 预渲染桂花光点精灵，避免每帧创建渐变 */
+  var SPRITE = (function () {
+    var S = 64;
+    var c = document.createElement('canvas');
+    c.width = c.height = S;
+    var g = c.getContext('2d');
+    var rg = g.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2);
+    rg.addColorStop(0, 'rgba(255,248,220,1)');
+    rg.addColorStop(0.22, 'rgba(255,228,145,0.9)');
+    rg.addColorStop(1, 'rgba(255,190,70,0)');
+    g.fillStyle = rg;
+    g.fillRect(0, 0, S, S);
+    return c;
+  })();
+
+  function makePetal(init) {
+    return {
+      x: Math.random() * W,
+      y: init ? Math.random() * H : -20,
+      r: rand(1.2, 2.8),
+      vy: rand(0.16, 0.52),
+      sway: rand(0.4, 1.2),
+      ph: Math.random() * 6.283,
+      a: rand(0.25, 0.7)
+    };
+  }
+
+  function build() {
+    var i;
+
+    stars = [];
+    var starCount = Math.min(220, Math.round(W * H / 9000));
+    for (i = 0; i < starCount; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: rand(0.3, 1.5),
+        a: rand(0.15, 0.85),
+        sp: rand(0.004, 0.018),
+        ph: Math.random() * 6.283
+      });
+    }
+
+    nodes = [];
+    var n = Math.round(Math.min(34, Math.max(16, W / 16)));
+    for (i = 0; i < n; i++) {
+      nodes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: rand(-0.22, 0.22),
+        vy: rand(-0.22, 0.22),
+        r: rand(1.1, 2.2)
+      });
+    }
+
+    petals = [];
+    for (i = 0; i < 20; i++) petals.push(makePetal(true));
+  }
+
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    cvs.width = Math.floor(W * DPR);
+    cvs.height = Math.floor(H * DPR);
+    cvs.style.width = W + 'px';
+    cvs.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    build();
+  }
+
+  function draw(now) {
+    var dt = lastT ? Math.min(50, now - lastT) : 16;
+    lastT = now;
+    var k = dt / 16;
+
+    ctx.clearRect(0, 0, W, H);
+
+    /* --- 星空 --- */
+    for (var i = 0; i < stars.length; i++) {
+      var s = stars[i];
+      s.ph += s.sp * k;
+      var alpha = s.a * (0.55 + 0.45 * Math.sin(s.ph));
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
+      ctx.arc(s.x, s.y, s.r, 0, 6.283);
+      ctx.fill();
+    }
+
+    /* --- 神经网络连线 --- */
+    var maxD = Math.max(92, Math.min(W, H) * 0.28);
+    var maxD2 = maxD * maxD;
+    for (var a = 0; a < nodes.length; a++) {
+      var na = nodes[a];
+      for (var b = a + 1; b < nodes.length; b++) {
+        var nb = nodes[b];
+        var dx = na.x - nb.x, dy = na.y - nb.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 < maxD2) {
+          var al = (1 - Math.sqrt(d2) / maxD) * 0.3;
+          ctx.strokeStyle = 'rgba(120,200,255,' + al.toFixed(3) + ')';
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(na.x, na.y);
+          ctx.lineTo(nb.x, nb.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    /* --- 神经元节点 --- */
+    for (var m = 0; m < nodes.length; m++) {
+      var p = nodes[m];
+      p.x += p.vx * k;
+      p.y += p.vy * k;
+      if (p.x < -12) p.x = W + 12;
+      if (p.x > W + 12) p.x = -12;
+      if (p.y < -12) p.y = H + 12;
+      if (p.y > H + 12) p.y = -12;
+
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(160,215,255,0.7)';
+      ctx.arc(p.x, p.y, p.r, 0, 6.283);
+      ctx.fill();
+    }
+
+    /* --- 桂花光点 --- */
+    for (var q = 0; q < petals.length; q++) {
+      var pt = petals[q];
+      pt.ph += 0.012 * k;
+      pt.y += pt.vy * k;
+      pt.x += Math.sin(pt.ph) * pt.sway * 0.7 * k;
+      if (pt.y > H + 24 || pt.x < -40 || pt.x > W + 40) {
+        petals[q] = makePetal(false);
+        continue;
+      }
+      var size = pt.r * 7.5;
+      ctx.globalAlpha = pt.a;
+      ctx.drawImage(SPRITE, pt.x - size / 2, pt.y - size / 2, size, size);
+      ctx.globalAlpha = 1;
+    }
+
+    /* --- 流星 --- */
+    if (!meteor) {
+      meteorTimer -= dt / 1000;
+      if (meteorTimer <= 0) {
+        meteorTimer = 9 + Math.random() * 11;
+        meteor = {
+          x: rand(W * 0.25, W * 1.0),
+          y: rand(0, H * 0.32),
+          vx: -(4 + Math.random() * 3),
+          vy: 2 + Math.random() * 1.4,
+          life: 1,
+          len: 90 + Math.random() * 70
+        };
+      }
+    } else {
+      meteor.x += meteor.vx * k;
+      meteor.y += meteor.vy * k;
+      meteor.life -= dt / 1700;
+
+      if (meteor.life <= 0 || meteor.x < -220 || meteor.y > H + 220) {
+        meteor = null;
+      } else {
+        var ex = meteor.x - meteor.vx * meteor.len / 6;
+        var ey = meteor.y - meteor.vy * meteor.len / 6;
+        var lg = ctx.createLinearGradient(meteor.x, meteor.y, ex, ey);
+        lg.addColorStop(0, 'rgba(255,255,255,' + (0.85 * meteor.life).toFixed(3) + ')');
+        lg.addColorStop(0.4, 'rgba(180,220,255,' + (0.35 * meteor.life).toFixed(3) + ')');
+        lg.addColorStop(1, 'rgba(140,200,255,0)');
+        ctx.strokeStyle = lg;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(meteor.x, meteor.y);
+        ctx.lineTo(ex, ey);
+        ctx.stroke();
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  /* --- 启动 --- */
+  resize();
+  var rt;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(resize, 180);
+  });
+  window.addEventListener('orientationchange', function () {
+    setTimeout(resize, 260);
+  });
+
+  requestAnimationFrame(function (t) {
+    lastT = t;
+    requestAnimationFrame(draw);
+  });
+
+  /* iOS 微信：禁止双击缩放 */
+  document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false });
+})();
+</script>
+</body>
+</html>
